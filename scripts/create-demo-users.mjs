@@ -11,9 +11,9 @@
 // (NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY).
 //
 // Demo accounts created (email / password):
-//   admin@meridian.demo      / admin123
-//   attorney@meridian.demo   / attorney123
-//   paralegal@meridian.demo  / paralegal123
+//   admin@meridian.demo      / password123
+//   attorney@meridian.demo   / password123
+//   paralegal@meridian.demo  / password123
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
@@ -54,9 +54,9 @@ if (!url || !serviceKey) {
 }
 
 const users = [
-  { email: 'admin@meridian.demo', password: 'admin123' },
-  { email: 'attorney@meridian.demo', password: 'attorney123' },
-  { email: 'paralegal@meridian.demo', password: 'paralegal123' },
+  { email: 'admin@meridian.demo', password: 'password123' },
+  { email: 'attorney@meridian.demo', password: 'password123' },
+  { email: 'paralegal@meridian.demo', password: 'password123' },
 ];
 
 const admin = createClient(url, serviceKey, {

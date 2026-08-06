@@ -70,10 +70,10 @@ export default function LoginPage() {
               {loading ? "Signing in…" : "Sign in"}
             </Button>
           </form>
-          <p className="mt-4 text-center text-xs text-muted-foreground">
-            Demo accounts: admin@meridian.demo / attorney@meridian.demo /
-            paralegal@meridian.demo
-          </p>
+<p className="mt-4 text-center text-xs text-muted-foreground">
+              Demo accounts: all use <code>password123</code> —
+              admin@meridian.demo · attorney@meridian.demo · paralegal@meridian.demo
+            </p>
         </CardContent>
       </Card>
     </div>

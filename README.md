@@ -53,7 +53,10 @@ cp .env.example .env      # fill in your Supabase URL + anon key + service_role 
 npm run dev               # http://localhost:3000
 ```
 
-Sign in with a demo user (admin@meridian.demo / admin123) to see everything; paralegal and attorney accounts demonstrate role limits.
+Sign in with a demo user (all use **password123**):
+- `admin@meridian.demo` — full access
+- `attorney@meridian.demo` — review & approve
+- `paralegal@meridian.demo` — create clients & drafts
 
 ## Environment variables (.env — never committed)
 

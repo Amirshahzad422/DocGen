@@ -30,11 +30,12 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isAuthPage = path.startsWith("/login");
+  const isLoginPost = path === "/login" && request.method === "POST";
 
   if (!user && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user && (isAuthPage || path === "/")) {
+  if (user && (isAuthPage && !isLoginPost || path === "/")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
