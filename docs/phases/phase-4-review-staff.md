@@ -1,7 +1,7 @@
 # Phase 4 — Review Workflow & Staff/Roles/RLS
 
-> **Owner:** Warisha
-> **Branch:** `warisha-docgen`
+> **Owner:** Arshia
+> **Branch:** `arshia-docgen`
 > **Case-study tasks:** T4.1 (draft review workflow), T4.2 (staff, roles & permissions with RLS)
 > **Depends on:** Phase 3 merged to main (documents exist with status `draft`)
 > **Est. effort:** ~1.5 days
@@ -13,7 +13,7 @@
 
 ```bash
 git checkout main && git pull
-git checkout -b warisha-docgen
+git checkout -b arshia-docgen
 cd meridian-docgen-alihaiderbajwa && npm install && npm run dev
 ```
 
@@ -105,11 +105,11 @@ Handoff check (from Phase 3, must all be true):
 ```bash
 git add -A && git commit -m "feat: review workflow with comments and status flow"
 git commit -m "feat: staff management and rls permission matrix"
-git push -u origin warisha-docgen
+git push -u origin arshia-docgen
 ```
 
 - [ ] Click-test Section 6 once more (both role accounts).
-- [ ] Open PR `warisha-docgen → main`, ask Ali to review, fix feedback, merge.
+- [ ] Open PR `arshia-docgen → main`, ask Ali to review, fix feedback, merge.
 
 ## 8. Handoff to Phase 5 (Ali)
 

@@ -1,6 +1,6 @@
-# Phase 2 — Templates & Dashboard (Warisha)
+# Phase 2 — Templates & Dashboard (Arshia)
 
-> **Owner:** Warisha · **Branch:** `warisha-docgen` · **Base:** `main` (contains merged Phase 1)
+> **Owner:** Arshia · **Branch:** `arshia-docgen` · **Base:** `main` (contains merged Phase 1)
 > **Case-study tasks:** T2.1 Template management with dynamic fields · T2.2 Live dashboard metrics & charts
 > **Est. effort:** 1.5 days · **Merge target:** `main` via PR (Ali reviews)
 
@@ -8,7 +8,7 @@
 
 ## ⚡ Quick brief for AI agents (read first)
 
-If you (Warisha) are using an AI agent to implement this phase, paste this block to it:
+If you (Arshia) are using an AI agent to implement this phase, paste this block to it:
 
 > You are implementing **Phase 2 (Templates & Dashboard)** of a Next.js 16 + TypeScript + Tailwind v4 + shadcn/ui + Supabase legal document generator. The repo is at the repo root; the app lives in `meridian-docgen-alihaiderbajwa/` and runs on port 3000. Read this file (`docs/phases/phase-2-templates-dashboard.md`) fully — it is the single source of truth, every task lists exact files, queries, and verification. Work in small commits after each verified task. Rules: never commit `.env.local`; only use `npm run build` + `npm run lint` to verify before committing; UI text is plain English, no emojis; follow the existing component conventions (PageHeader, Card, client components with `"use client"`). You may read any file in the repo. Do not touch files outside this phase's scope (`src/app/(dashboard)/templates/`, `src/app/(dashboard)/dashboard/`, `src/components/templates/`, `src/components/dashboard/`, `src/lib/template-types.ts`).
 
@@ -30,7 +30,7 @@ If you (Warisha) are using an AI agent to implement this phase, paste this block
 
 ```bash
 git checkout main && git pull
-git checkout -b warisha-docgen
+git checkout -b arshia-docgen
 cd meridian-docgen-alihaiderbajwa
 npm install
 npm run dev        # http://localhost:3000
@@ -415,10 +415,10 @@ Group by template name in JS, sort desc, top 5. `BarChart` with `<Bar dataKey="c
 ## 9. Commit & merge
 
 ```bash
-git add -A && git push -u origin warisha-docgen
+git add -A && git push -u origin arshia-docgen
 ```
 
-- [ ] PR `warisha-docgen → main` (title: "Phase 2: Templates & Dashboard"), ask Ali to review.
+- [ ] PR `arshia-docgen → main` (title: "Phase 2: Templates & Dashboard"), ask Ali to review.
 - [ ] Fix review feedback in small follow-up commits; do not rebase.
 - [ ] Merge only after Ali approves and you re-ran the test script.
 

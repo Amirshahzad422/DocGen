@@ -135,7 +135,7 @@ DATABASE_URL="postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supab
 - [ ] Click-test the app once more (run through Section 8 verification).
 - [ ] Open PR to main (GitHub UI or `gh pr create`), self-review, merge.
 
-## 10. Handoff to Phase 2 (Warisha)
+## 10. Handoff to Phase 2 (Arshia)
 
 - [ ] On main: `git checkout main && git pull` — confirm the merged Phase 1 code is there.
-- [ ] Message to Warisha: create `warisha-docgen` from updated main, open `docs/phases/phase-2-templates-dashboard.md`, follow it task-by-task, PR to main when done.
+- [ ] Message to Arshia: create `arshia-docgen` from updated main, open `docs/phases/phase-2-templates-dashboard.md`, follow it task-by-task, PR to main when done.

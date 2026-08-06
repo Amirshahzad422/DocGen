@@ -114,9 +114,9 @@ git push -u origin alihaiderbajwa-docgen
 ```
 
 - [ ] Click-test Section 7 once more.
-- [ ] Open PR `alihaiderbajwa-docgen → main`, ask Warisha to review, fix feedback, merge.
+- [ ] Open PR `alihaiderbajwa-docgen → main`, ask Arshia to review, fix feedback, merge.
 
-## 9. Handoff to Phase 4 (Warisha)
+## 9. Handoff to Phase 4 (Arshia)
 
-- [ ] Message Warisha: Phase 3 merged. Next: `docs/phases/phase-4-review-staff.md` — branch `warisha-docgen` from updated main.
+- [ ] Message Arshia: Phase 3 merged. Next: `docs/phases/phase-4-review-staff.md` — branch `arshia-docgen` from updated main.
 - [ ] Note: documents now exist with status `draft` — the review queue will read exactly those rows.
