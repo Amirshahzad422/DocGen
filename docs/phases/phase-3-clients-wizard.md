@@ -76,7 +76,7 @@ Handoff check (from Phase 2, must all be true):
 - [ ] Validate on Next: required fields must be non-empty (type-specific: date parses, number parses, select must match an option). Show inline error text, block advancing.
 - [ ] Keep answers in `useState` (`Record<fieldId, string>`), persist across steps; on last step show a review summary (all Q/A pairs) before Submit.
 - [ ] Submit → `router.push` to generation endpoint handled in step 6.
-- [ ] Verify: NDA template (4 fields) = 2 steps; trying to skip a required field blocks with a message.
+- [ ] Verify: NDA template (6 fields) = 2 steps; trying to skip a required field blocks with a message.
 
 ## 6. Generation & merge engine
 
@@ -84,7 +84,7 @@ Handoff check (from Phase 2, must all be true):
 - Create: `src/lib/merge.ts`
 - Create: `src/app/(dashboard)/wizard/[templateId]/complete/page.tsx` (or a server action in the wizard page — your choice, keep consistent)
 
-- [ ] `merge.ts` exports `mergeTemplate(body: string, values: Record<string, string>): string` that replaces every `{{token}}` in the body with `values[token]` (fallback: `[Not provided]` for missing tokens). Pure function, no I/O.
+- [ ] `merge.ts` exports `mergeTemplate(body: string, values: Record<string, string>): string` that replaces every `{{token}}` in the body with `values[token]`. **Fallback syntax:** some seeded bodies use `{{token|fallback}}` (e.g. `{{spouse_name|not married}}`); when the answer is missing or empty, use the inline fallback; when there is no inline fallback, use `[Not provided]`. Tokens with no matching placeholder in the body are ignored. Pure function, no I/O.
 - [ ] Generation flow on submit:
   1. Build `field_values` as `Record<fieldLabel, answer>` (label → answer, human-readable).
   2. Build answers map for merge: `Record<token, answer>` where token = label lowercased/slugged — **important**: schema convention from Phase 1 is tokens like `{{client_name}}`, `{{disclosing_party}}` = field labels slugified (lowercase, spaces→underscores). Slugify labels before merge; if a label has no token in body, still store the answer in `field_values`.
@@ -93,7 +93,7 @@ Handoff check (from Phase 2, must all be true):
 - [ ] **Verify merge correctness** (critical): generate a Simple Will for a seeded client; open the document — every answer appears in the right `{{token}}` slot; tokens without answers show `[Not provided]`.
 - [ ] Unit-test the merge function (choose the simplest available runner — if none exists, add `vitest`):
   - `mergeTemplate('Hi {{name}}', { name: 'Ali' })` → `'Hi Ali'`
-  - missing token → `[Not provided]`; unknown `{{token}}` left untouched; null body → ''.
+  - missing token → `[Not provided]`; inline fallback `{{x|fallback}}` → `fallback` when answer missing; unknown `{{token}}` left untouched; null body → ''.
 
 ## 7. Manual test script (must all pass)
 
