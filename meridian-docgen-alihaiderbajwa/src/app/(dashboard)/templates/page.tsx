@@ -1,33 +1,25 @@
 import { PageHeader } from "@/components/ui/page-header";
-import { createClient } from "@/lib/supabase-server";
-import ConnectivityCard from "@/components/dashboard/connectivity-card";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { TemplateList } from "@/components/templates/template-list";
 
-async function counts() {
-  const supabase = await createClient();
-  const [{ count: templates }, { count: fields }] = await Promise.all([
-    supabase
-      .from("document_templates")
-      .select("id", { count: "exact", head: true }),
-    supabase
-      .from("template_fields")
-      .select("id", { count: "exact", head: true }),
-  ]);
-  return { templates, fields };
-}
-
-export default async function TemplatesPage() {
-  const c = await counts();
-
+export default function TemplatesPage() {
   return (
     <>
       <PageHeader
-        title="Templates"
-        description="Template library with dynamic fields (built out in Phase 2)."
+        title="Template Library"
+        description="Create, edit, and organize document templates."
+        action={
+          <Link
+            href="/templates/new"
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
+            New Template
+          </Link>
+        }
       />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ConnectivityCard title="Templates" value={c.templates} note="from document_templates" />
-        <ConnectivityCard title="Dynamic fields" value={c.fields} note="from template_fields" />
-      </div>
+      <TemplateList />
     </>
   );
 }

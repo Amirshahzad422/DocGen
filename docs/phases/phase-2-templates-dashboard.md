@@ -41,7 +41,7 @@ npm run dev        # http://localhost:3000
 - [ ] Supabase has seeded data: `select count(*) from document_templates;` → **3** · `select count(*) from template_fields;` → **17** · `select count(*) from clients;` → **3** · `select count(*) from roles;` → **3** (verify in SQL Editor, or `DATABASE_URL=... node scripts/run-sql.mjs` re-runs everything idempotently — note: it recreates tables, wiping any data)
 - [ ] Demo auth users exist. If you get a 500 "Database error querying schema" on login, the auth users were not created via the Admin API — run `SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... node scripts/create-demo-users.mjs` (see README §"Rebuild the entire database"), or ask Ali.
 
-**Testing accounts:** `admin@meridian.demo / admin123` (use this for ALL write tests) · `attorney@meridian.demo / attorney123` · `paralegal@meridian.demo / paralegal123`.
+**Testing accounts:** `admin@meridian.demo / password123` (use this for ALL write tests) · `attorney@meridian.demo / password123` · `paralegal@meridian.demo / password123`.
 
 ## 2. Codebase tour (10 minutes — do not skip)
 
@@ -401,7 +401,7 @@ Group by template name in JS, sort desc, top 5. `BarChart` with `<Bar dataKey="c
 
 ## 8. Manual test script (run the whole thing, in order)
 
-1. Login as `admin@meridian.demo / admin123`.
+1. Login as `admin@meridian.demo / password123`.
 2. Dashboard → all three cards > 0, feed + charts render.
 3. Templates → 3 seeded templates with correct field counts (5/6/6).
 4. Search "will" → only Simple Will.
@@ -409,7 +409,7 @@ Group by template name in JS, sort desc, top 5. `BarChart` with `<Bar dataKey="c
 6. Edit it → rename to "Rental Agreement v2", change Lease Type options, add a field → saved.
 7. Delete it → gone; SQL shows its fields cascaded.
 8. SQL-insert a test generated_document → refocus browser → dashboard numbers/feed/charts change.
-9. Sign out → sign in as `paralegal@meridian.demo / paralegal123` → can READ everything, but creating a template shows the RLS error.
+9. Sign out → sign in as `paralegal@meridian.demo / password123` → can READ everything, but creating a template shows the RLS error.
 10. `npm run build` clean · `npm run lint` clean.
 
 ## 9. Commit & merge

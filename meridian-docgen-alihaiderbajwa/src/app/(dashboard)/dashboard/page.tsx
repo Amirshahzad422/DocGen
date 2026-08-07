@@ -1,51 +1,23 @@
 import { PageHeader } from "@/components/ui/page-header";
-import { createClient } from "@/lib/supabase-server";
-import ConnectivityCard from "@/components/dashboard/connectivity-card";
+import { MetricCards } from "@/components/dashboard/metric-cards";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
+import { Charts } from "@/components/dashboard/charts";
 
-async function liveCounts() {
-  const supabase = await createClient();
-  const [{ count: templates }, { count: thisMonth }, { count: pending }] =
-    await Promise.all([
-      supabase
-        .from("document_templates")
-        .select("id", { count: "exact", head: true }),
-      supabase
-        .from("generated_documents")
-        .select("id", { count: "exact", head: true })
-        .gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()),
-      supabase
-        .from("generated_documents")
-        .select("id", { count: "exact", head: true })
-        .in("status", ["draft", "under_review", "changes_requested"]),
-    ]);
-  return { templates, thisMonth, pending };
-}
-
-export default async function DashboardPage() {
-  const counts = await liveCounts();
-
+export default function DashboardPage() {
   return (
     <>
       <PageHeader
         title="Dashboard"
-        description="Live totals, activity, and charts (built out in Phase 2)."
+        description="Live numbers from the database."
       />
-      <div className="grid gap-4 sm:grid-cols-3">
-        <ConnectivityCard
-          title="Total templates"
-          value={counts.templates}
-          note="from document_templates"
-        />
-        <ConnectivityCard
-          title="Documents this month"
-          value={counts.thisMonth}
-          note="from generated_documents"
-        />
-        <ConnectivityCard
-          title="Pending review"
-          value={counts.pending}
-          note="draft + under_review + changes_requested"
-        />
+      <MetricCards />
+      <div className="mt-6 grid gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-2">
+          <ActivityFeed />
+        </div>
+        <div className="lg:col-span-3">
+          <Charts />
+        </div>
       </div>
     </>
   );
