@@ -1,31 +1,25 @@
 import { PageHeader } from "@/components/ui/page-header";
-import { createClient } from "@/lib/supabase-server";
-import ConnectivityCard from "@/components/dashboard/connectivity-card";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ClientList } from "@/components/clients/client-list";
 
-async function counts() {
-  const supabase = await createClient();
-  const [{ count: clients }, { count: docs }] = await Promise.all([
-    supabase.from("clients").select("id", { count: "exact", head: true }),
-    supabase
-      .from("generated_documents")
-      .select("id", { count: "exact", head: true }),
-  ]);
-  return { clients, docs };
-}
-
-export default async function ClientsPage() {
-  const c = await counts();
-
+export default function ClientsPage() {
   return (
     <>
       <PageHeader
         title="Clients"
-        description="Client records with document history (built out in Phase 3)."
+        description="Client records with document history."
+        action={
+          <Link
+            href="/clients/new"
+            className={cn(buttonVariants({ variant: "default" }))}
+          >
+            New Client
+          </Link>
+        }
       />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ConnectivityCard title="Clients" value={c.clients} note="from clients" />
-        <ConnectivityCard title="Linked documents" value={c.docs} note="from generated_documents" />
-      </div>
+      <ClientList />
     </>
   );
 }
