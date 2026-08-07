@@ -15,11 +15,9 @@ import { FIELD_TYPES, type FieldType, type TemplateFieldDraft } from "@/lib/temp
 export function FieldBuilder({
   fields,
   onChange,
-  mode,
 }: {
   fields: TemplateFieldDraft[];
   onChange: (fields: TemplateFieldDraft[]) => void;
-  mode?: "create" | "edit";
 }) {
   function update(i: number, patch: Partial<TemplateFieldDraft>) {
     onChange(fields.map((f, idx) => (idx === i ? { ...f, ...patch } : f)));
@@ -41,7 +39,7 @@ export function FieldBuilder({
     onChange([
       ...fields,
       {
-        id: mode === "edit" ? `__new__${fields.length}` : crypto.randomUUID(),
+        id: crypto.randomUUID(),
         label: "",
         field_type: "text",
         options: [],
