@@ -80,11 +80,11 @@ Handoff check (from Phase 3, must all be true):
 **Files:**
 - Create: `src/lib/permissions.ts` — `canApprove(role)`, `canManageTemplates(role)`, `canManageStaff(role)` helpers mapping the matrix above (used to hide UI buttons; RLS is the real gate).
 
-- [ ] Test with the **paralegal** account (paralegal@meridian.demo / paralegal123):
+- [ ] Test with the **paralegal** account (paralegal@meridian.demo / password123):
   - [ ] Review queue loads (select allowed)
   - [ ] Comment box visible; can comment
   - [ ] Approve/Finalize buttons hidden; if forced via SQL/console, the `update` fails with RLS error 42501
-- [ ] Test with **attorney** account (attorney@meridian.demo / attorney123):
+- [ ] Test with **attorney** account (attorney@meridian.demo / password123):
   - [ ] Approve + Finalize buttons visible; approval succeeds
 - [ ] Test with **admin**: everything works; staff page shows all rows; can create staff.
 - [ ] SQL sanity check (SQL Editor, signed out / anon): `select * from clients;` returns 0 rows (RLS blocks unauthenticated).
