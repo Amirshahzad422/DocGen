@@ -84,12 +84,16 @@ export function TemplateForm({ mode, initial, templateId }: Props) {
           return;
         }
 
-        const { error: fldErr } = await supabase.from("template_fields").insert(
-          rows.map((r) => ({ ...r, template_id: tpl.id })),
-        );
-        if (fldErr) {
-          setError(fldErr.message);
-          return;
+        if (rows.length > 0) {
+          const { error: fldErr } = await supabase
+            .from("template_fields")
+            .insert(rows.map((r) => ({ ...r, template_id: tpl.id })));
+          if (fldErr) {
+            // Avoid leaving an unusable template behind when its fields fail.
+            await supabase.from("document_templates").delete().eq("id", tpl.id);
+            setError(fldErr.message);
+            return;
+          }
         }
       } else {
         // Edit mode: "delete all + re-insert" instead of diffing. At this
@@ -117,12 +121,14 @@ export function TemplateForm({ mode, initial, templateId }: Props) {
           return;
         }
 
-        const { error: fldErr } = await supabase.from("template_fields").insert(
-          rows.map((r) => ({ ...r, template_id: templateId })),
-        );
-        if (fldErr) {
-          setError(fldErr.message);
-          return;
+        if (rows.length > 0) {
+          const { error: fldErr } = await supabase
+            .from("template_fields")
+            .insert(rows.map((r) => ({ ...r, template_id: templateId })));
+          if (fldErr) {
+            setError(fldErr.message);
+            return;
+          }
         }
       }
 

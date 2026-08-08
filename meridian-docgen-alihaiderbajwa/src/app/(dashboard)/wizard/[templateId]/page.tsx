@@ -51,25 +51,40 @@ export default function WizardFormPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
+      if (!clientId) {
+        setLoadError("Choose a client before starting the wizard.");
+        setLoading(false);
+        return;
+      }
+
       const [tplRes, cliRes] = await Promise.all([
         supabase
           .from("document_templates")
           .select("id, name, body")
           .eq("id", params.templateId)
+          .eq("status", "active")
           .single(),
         supabase.from("clients").select("name").eq("id", clientId).single(),
       ]);
       if (cancelled) return;
       if (tplRes.error || !tplRes.data) {
         setNotFound(true);
+        setLoading(false);
+        return;
+      }
+      if (cliRes.error || !cliRes.data) {
+        setLoadError("The selected client does not exist or is unavailable.");
+        setLoading(false);
         return;
       }
       setTemplate(tplRes.data as LoadedTemplate);
-      setClientName(cliRes.error ? "" : (cliRes.data.name as string));
+      setClientName(cliRes.data.name as string);
 
       const { data: fieldRows, error: fErr } = await supabase
         .from("template_fields")
@@ -77,7 +92,13 @@ export default function WizardFormPage() {
         .eq("template_id", params.templateId)
         .order("sort_order");
       if (cancelled) return;
-      if (!fErr) setFields((fieldRows ?? []) as WizardField[]);
+      if (fErr) {
+        setLoadError(fErr.message);
+        setLoading(false);
+        return;
+      }
+      setFields((fieldRows ?? []) as WizardField[]);
+      setLoading(false);
     }
     load();
     return () => {
@@ -182,12 +203,22 @@ export default function WizardFormPage() {
     try {
       const {
         data: { user },
+        error: userError,
       } = await supabase.auth.getUser();
-      const { data: staffRow } = await supabase
+      if (userError || !user) {
+        setSubmitError("Your session has expired. Sign in and try again.");
+        return;
+      }
+
+      const { data: staffRow, error: staffError } = await supabase
         .from("staff")
         .select("id")
-        .eq("user_id", user?.id ?? "")
+        .eq("user_id", user.id)
         .maybeSingle();
+      if (staffError || !staffRow) {
+        setSubmitError("Your account is not linked to an active staff profile.");
+        return;
+      }
 
       const field_values: Record<string, string> = {};
       const mergeValues: Record<string, string> = {};
@@ -202,7 +233,7 @@ export default function WizardFormPage() {
         .insert({
           template_id: params.templateId,
           client_id: clientId,
-          created_by: staffRow?.id ?? null,
+          created_by: staffRow.id,
           field_values,
           content: mergeTemplate(template?.body ?? "", mergeValues),
           status: "draft",
@@ -240,8 +271,26 @@ export default function WizardFormPage() {
     );
   }
 
-  if (!template || fields.length === 0) {
+  if (loading) {
     return <p className="text-sm text-muted-foreground">Loading…</p>;
+  }
+
+  if (loadError || !template) {
+    return (
+      <>
+        <PageHeader title="Unable to start wizard" />
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <p className="text-sm text-destructive">
+              {loadError ?? "The template could not be loaded."}
+            </p>
+            <Button variant="outline" onClick={() => router.push("/wizard")}>
+              Back to wizard
+            </Button>
+          </CardContent>
+        </Card>
+      </>
+    );
   }
 
   const isReview = step >= steps.length;

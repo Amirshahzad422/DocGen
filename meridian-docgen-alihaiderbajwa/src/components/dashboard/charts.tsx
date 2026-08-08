@@ -15,6 +15,7 @@ import {
 import { supabase } from "@/lib/supabase";
 import { useFocusRefresh } from "@/lib/use-focus-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InlineError, Skeleton } from "@/components/ui/states";
 
 type MonthPoint = { month: string; count: number };
 type TemplatePoint = { name: string; count: number };
@@ -86,13 +87,9 @@ export function Charts() {
           <CardTitle>Documents over time</CardTitle>
         </CardHeader>
         <CardContent>
-          {error && (
-            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
-          )}
+          {error && <InlineError message={error} />}
           {overTime === null && !error ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
+            <Skeleton className="h-[260px] w-full rounded-xl" />
           ) : (
             <>
               <ResponsiveContainer width="100%" height={260}>
@@ -104,7 +101,9 @@ export function Charts() {
                   <Line
                     type="monotone"
                     dataKey="count"
-                    stroke="hsl(var(--primary))"
+                    stroke="var(--chart-1)"
+                    strokeWidth={2.5}
+                    dot={{ fill: "var(--card)", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -124,7 +123,7 @@ export function Charts() {
         </CardHeader>
         <CardContent>
           {byTemplate === null && !error ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
+            <Skeleton className="h-[260px] w-full rounded-xl" />
           ) : (
             <>
               <ResponsiveContainer width="100%" height={260}>
@@ -135,7 +134,7 @@ export function Charts() {
                   <Tooltip />
                   <Bar
                     dataKey="count"
-                    fill="hsl(var(--primary))"
+                    fill="var(--chart-1)"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
