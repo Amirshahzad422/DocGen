@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SpotlightCard } from "@/components/react-bits/spotlight-card";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const benefits = [
   { icon: FileCheck2, label: "Guided document workflows" },
@@ -108,6 +109,7 @@ export default function LoginPage() {
       </section>
 
       <section className="relative flex min-h-screen items-center justify-center bg-background/95 px-4 py-10 sm:px-8 lg:bg-background">
+        <ThemeToggle className="absolute right-4 top-4 border bg-card shadow-sm" />
         <div className="w-full max-w-md">
           <div data-login-reveal className="mb-8 flex items-center gap-3 lg:hidden">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">

@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -99,15 +100,12 @@ export default function Sidebar({
             <p className="truncate text-xs text-muted-foreground">{userEmail ?? ""}</p>
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start text-muted-foreground"
-          onClick={signOut}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" className="flex-1 justify-start text-muted-foreground" onClick={signOut}>
+            <LogOut className="mr-2 h-4 w-4" /> Sign out
+          </Button>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );

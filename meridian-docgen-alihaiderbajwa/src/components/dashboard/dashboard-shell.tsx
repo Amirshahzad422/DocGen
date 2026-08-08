@@ -5,6 +5,7 @@ import { Menu, Scale, X } from "lucide-react";
 import Sidebar from "@/components/dashboard/sidebar";
 import { PageTransition } from "@/components/motion/page-transition";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function DashboardShell({
   children,
@@ -51,6 +52,8 @@ export function DashboardShell({
             <p className="text-[0.68rem] text-muted-foreground">Legal workspace</p>
           </div>
         </div>
+        <div className="flex items-center gap-1">
+        <ThemeToggle />
         <Button
           variant="outline"
           size="icon"
@@ -61,6 +64,7 @@ export function DashboardShell({
         >
           <Menu aria-hidden="true" />
         </Button>
+        </div>
       </header>
 
       <div

@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { Check, FilePenLine, Sparkles } from "lucide-react";
+import { gsap } from "gsap";
 import { supabase } from "@/lib/supabase";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,8 @@ import {
 } from "@/components/ui/select";
 import { mergeTemplate, slugifyLabel } from "@/lib/merge";
 import { type FieldType } from "@/lib/template-types";
+import { InlineError, Skeleton } from "@/components/ui/states";
+import { cn } from "@/lib/utils";
 
 type WizardField = {
   id: string;
@@ -53,6 +57,7 @@ export default function WizardFormPage() {
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -114,6 +119,20 @@ export default function WizardFormPage() {
     return out;
   }, [fields]);
 
+  useLayoutEffect(() => {
+    if (!panelRef.current) return;
+    const mm = gsap.matchMedia(panelRef);
+    mm.add({ reduceMotion: "(prefers-reduced-motion: reduce)" }, (context) => {
+      if (context.conditions?.reduceMotion) return;
+      gsap.fromTo(
+        ":scope > *",
+        { autoAlpha: 0, x: 12 },
+        { autoAlpha: 1, x: 0, duration: 0.42, stagger: 0.045, ease: "power3.out", clearProps: "transform,opacity,visibility" },
+      );
+    });
+    return () => mm.revert();
+  }, [step]);
+
   function validateStep(stepFields: WizardField[]): string | null {
     for (const f of stepFields) {
       const value = (answers[f.id] ?? "").trim();
@@ -159,9 +178,12 @@ export default function WizardFormPage() {
     if (f.field_type === "textarea") {
       return (
         <Textarea
+          id={f.id}
+          name={f.id}
           rows={4}
           placeholder="Your answer…"
           value={value}
+          required={f.required}
           onChange={(e) => set(e.target.value)}
         />
       );
@@ -169,7 +191,7 @@ export default function WizardFormPage() {
     if (f.field_type === "select") {
       return (
         <Select value={value} onValueChange={(v) => set(v as string)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger id={f.id} className="h-10 w-full">
             <SelectValue placeholder="Select…" />
           </SelectTrigger>
           <SelectContent>
@@ -184,8 +206,12 @@ export default function WizardFormPage() {
     }
     return (
       <Input
+        id={f.id}
+        name={f.id}
         type={f.field_type === "date" ? "date" : f.field_type === "number" ? "number" : "text"}
         placeholder="Your answer…"
+        required={f.required}
+        className="h-10"
         value={value}
         onChange={(e) => set(e.target.value)}
       />
@@ -272,7 +298,7 @@ export default function WizardFormPage() {
   }
 
   if (loading) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return <div role="status" aria-label="Loading document wizard" className="max-w-3xl space-y-4"><Skeleton className="h-8 w-56" /><Skeleton className="h-3 w-80" /><Skeleton className="h-2 w-full rounded-full" /><Skeleton className="h-80 w-full rounded-2xl" /><span className="sr-only">Loading…</span></div>;
   }
 
   if (loadError || !template) {
@@ -299,26 +325,29 @@ export default function WizardFormPage() {
     <>
       <PageHeader
         title={template.name}
-        description={`Client: ${clientName || "Unknown"} — generating a ${template.name} document.`}
+        description={`Client: ${clientName || "Unknown"} — complete the guided interview, review your answers, then generate the draft.`}
       />
 
-      <Card className="max-w-2xl">
+      <div className="mb-5 max-w-3xl" aria-label={`Wizard progress: ${isReview ? "review" : `step ${step + 1}`} of ${steps.length + 1}`}>
+        <div className="mb-2 flex items-center justify-between text-xs"><span className="font-medium text-foreground">{isReview ? "Final review" : `Interview ${step + 1} of ${steps.length}`}</span><span className="text-muted-foreground">{Math.round(((Math.min(step, steps.length) + 1) / (steps.length + 1)) * 100)}% complete</span></div>
+        <div className="h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${((Math.min(step, steps.length) + 1) / (steps.length + 1)) * 100}%` }} /></div>
+        <ol className="mt-3 flex gap-1.5" aria-hidden="true">{Array.from({ length: steps.length + 1 }, (_, index) => <li key={index} className={cn("h-1 flex-1 rounded-full", index <= step ? "bg-primary/60" : "bg-muted")} />)}</ol>
+      </div>
+
+      <Card className="max-w-3xl shadow-[0_20px_55px_-40px_color-mix(in_oklch,var(--foreground)_45%,transparent)]">
         <CardHeader>
-          <CardTitle>
-            {isReview
-              ? "Review your answers"
-              : `Step ${step + 1} of ${steps.length}`}
-          </CardTitle>
+          <div className="flex items-center gap-3"><div className="flex size-10 items-center justify-center rounded-xl bg-primary/[0.08] text-primary">{isReview ? <Sparkles className="size-4" aria-hidden="true" /> : <FilePenLine className="size-4" aria-hidden="true" />}</div><div><p className="text-xs font-medium text-muted-foreground">{isReview ? "Ready to generate" : `${(steps[step] ?? []).length} questions`}</p><CardTitle>{isReview ? "Review your answers" : `Document details · ${step + 1}`}</CardTitle></div></div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent ref={panelRef} className="space-y-5">
           {!isReview &&
             (steps[step] ?? []).map((f) => (
-              <div key={f.id} className="space-y-1.5">
-                <Label>
+              <div key={f.id} className="space-y-2 rounded-xl border bg-muted/[0.18] p-4">
+                <Label htmlFor={f.id}>
                   {f.label}
-                  {f.required && <span className="text-destructive"> *</span>}
+                  {f.required && <span className="ml-1 text-destructive" aria-label="required">*</span>}
                 </Label>
                 {renderField(f)}
+                <p className="text-[0.7rem] text-muted-foreground">{f.required ? "Required" : "Optional"} · {f.field_type === "textarea" ? "Long answer" : f.field_type}</p>
               </div>
             ))}
 
@@ -327,10 +356,10 @@ export default function WizardFormPage() {
               {fields.map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-start justify-between gap-3 rounded-md border px-3 py-2"
+                  className="flex flex-col gap-1 rounded-xl border bg-muted/[0.18] px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3"
                 >
-                  <span className="text-sm font-medium">{f.label}</span>
-                  <span className="text-sm text-muted-foreground">
+                  <span className="flex items-center gap-2 text-sm font-medium"><Check className="size-3.5 text-primary" aria-hidden="true" />{f.label}</span>
+                  <span className="break-words text-sm text-muted-foreground sm:max-w-[55%] sm:text-right">
                     {(answers[f.id] ?? "").trim() || "—"}
                   </span>
                 </div>
@@ -338,24 +367,16 @@ export default function WizardFormPage() {
             </div>
           )}
 
-          {stepError && (
-            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {stepError}
-            </p>
-          )}
-          {submitError && (
-            <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {submitError}
-            </p>
-          )}
+          {stepError && <InlineError message={stepError} />}
+          {submitError && <InlineError message={submitError} />}
 
-          <div className="flex justify-between">
+          <div className="flex justify-between border-t pt-5">
             <Button variant="outline" onClick={back} disabled={step === 0}>
               Back
             </Button>
             {isReview ? (
-              <Button onClick={handleSubmit} disabled={saving}>
-                {saving ? "Generating…" : "Generate Document"}
+              <Button size="lg" onClick={handleSubmit} disabled={saving}>
+                <Sparkles aria-hidden="true" />{saving ? "Generating…" : "Generate document"}
               </Button>
             ) : (
               <Button onClick={next}>Next</Button>
