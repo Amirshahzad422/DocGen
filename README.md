@@ -17,14 +17,14 @@ Built by VERXEON interns as a case-study deliverable. Property of VERXEON Techno
 
 ## Tech Stack
 
-Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · Recharts · Supabase (Postgres + Auth + RLS)
+Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · Recharts · Supabase (Postgres + Auth + RLS)
 
 ## Project layout
 
 ```
 ├── PLAN.md                 # master implementation plan
 ├── docs/phases/            # per-phase instructions (phase-1..5)
-├── src/                    # Next.js app
+├── meridian-docgen-alihaiderbajwa/ # Next.js app
 ├── supabase/sql/           # schema.sql, seed.sql, policies.sql (DB is fully rebuildable from these)
 └── scripts/create-demo-users.mjs
 ```
@@ -50,9 +50,10 @@ Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · Rechart
 ## Run the app locally
 
 ```bash
-npm install
-cp .env.example .env      # fill in your Supabase URL + anon key + service_role key
-npm run dev               # http://localhost:3000
+cd meridian-docgen-alihaiderbajwa
+npm ci
+cp .env.example .env.local # fill in your Supabase URL and publishable key
+npm run dev                # http://localhost:3000
 ```
 
 Sign in with a demo user (all use **password123**):
@@ -60,7 +61,7 @@ Sign in with a demo user (all use **password123**):
 - `attorney@meridian.demo` — review & approve
 - `paralegal@meridian.demo` — create clients & drafts
 
-## Environment variables (.env — never committed)
+## Environment variables (`.env.local` — never committed)
 
 | Variable | Where to find it |
 |---|---|
@@ -68,9 +69,13 @@ Sign in with a demo user (all use **password123**):
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API (anon/publishable) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase → Project Settings → API (service_role) — only used by `scripts/` |
 
-`.env` is gitignored. Any clone must create its own from `.env.example`.
+Environment files are gitignored. Any clone must create its own `.env.local`
+from `.env.example`. The web app only needs the two `NEXT_PUBLIC_*` values;
+the service-role/secret key is exclusively for the local demo-user script.
 
 ## Optional: deploy to Vercel
+
+Live demo: **https://meridian-docgen.vercel.app** (deployed 8 Aug 2026).
 
 1. Push to GitHub, import the repo at vercel.com.
 2. Add the two `NEXT_PUBLIC_*` env vars only (never `SUPABASE_SERVICE_ROLE_KEY`).

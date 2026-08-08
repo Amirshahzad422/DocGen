@@ -38,7 +38,7 @@ LAST WILL AND TESTAMENT
 
 I, {{client_name}}, born on {{date_of_birth}}, currently residing at the address provided to my attorney, being of sound mind, do hereby revoke all prior wills and codicils and declare this to be my Last Will and Testament.
 
-1. SPOUSE. I am {{spouse_name|not married}} married. All references to my spouse in this Will are to the person named above.
+1. SPOUSE. Spouse: {{spouse_name|Not married}}. All references to my spouse in this Will are to the person named above.
 
 2. EXECUTOR. I nominate {{executor_name}} as the Executor of this Will, and direct that no bond be required of my Executor.
 

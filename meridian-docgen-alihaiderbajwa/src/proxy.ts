@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(url, anonKey, {
@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
   if (!user && !isAuthPage) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  if (user && (isAuthPage && !isLoginPost || path === "/")) {
+  if (user && ((isAuthPage && !isLoginPost) || path === "/")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

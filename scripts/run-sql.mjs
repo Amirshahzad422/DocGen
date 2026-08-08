@@ -36,8 +36,11 @@ const client = new pg.Client({
 await client.connect();
 
 const files = ['schema.sql', 'seed.sql', 'policies.sql'];
+if (limit && !files.some((file) => file.replace(/\.sql$/, '') === limit)) {
+  console.error(`Invalid LIMIT=${limit}. Expected schema, seed, or policies.`);
+  process.exit(1);
+}
 for (const file of files) {
-  if (limit && file.replace(/\.sql$/, '') !== limit) continue;
   if (!existsSync(join(sqlDir, file))) {
     console.error(`Missing ${file} in supabase/sql/`);
     process.exit(1);
@@ -47,6 +50,7 @@ for (const file of files) {
   const sql = readFileSync(join(sqlDir, file), 'utf8');
   await client.query(sql);
   console.log(`✓ ${file} done`);
+  if (limit === file.replace(/\.sql$/, '')) break;
 }
 
 await client.end();
