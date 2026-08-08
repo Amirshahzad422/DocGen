@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { FileText, Mail, Phone, UserRoundPlus, UsersRound } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/search-input";
+import { EmptyState, InlineError, TableSkeleton } from "@/components/ui/states";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 type ClientRow = {
   id: string;
@@ -27,118 +23,95 @@ export function ClientList() {
   const [clients, setClients] = useState<ClientRow[] | null>(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  async function fetchClients(term?: string) {
-    let q = supabase
-      .from("clients")
-      .select("id, name, email, phone, created_at, generated_documents(count)")
-      .order("created_at", { ascending: false });
-    if (term) {
-      const like = `%${term}%`;
-      q = q.or(`name.ilike.${like},email.ilike.${like}`);
-    }
-    const { data, error } = await q;
-    return { data: (data ?? []) as ClientRow[], error };
-  }
 
   useEffect(() => {
     let cancelled = false;
-    fetchClients().then(({ data, error }) => {
-      if (cancelled) return;
-      setLoading(false);
-      if (error) {
-        setError(error.message);
-        return;
-      }
-      setClients(data);
-    });
+    supabase
+      .from("clients")
+      .select("id, name, email, phone, created_at, generated_documents(count)")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) setError(error.message);
+        else setClients((data ?? []) as ClientRow[]);
+      });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  function handleSearch(v: string) {
-    setSearch(v);
-    setLoading(true);
-    fetchClients(v).then(({ data, error }) => {
-      setLoading(false);
-      if (error) {
-        setError(error.message);
-        return;
-      }
-      setClients(data);
-    });
-  }
+  const visibleClients = useMemo(() => {
+    const term = search.trim().toLocaleLowerCase();
+    if (!term) return clients ?? [];
+    return (clients ?? []).filter((client) =>
+      [client.name, client.email, client.phone].some((value) =>
+        value?.toLocaleLowerCase().includes(term),
+      ),
+    );
+  }, [clients, search]);
 
   return (
     <div className="space-y-4">
-      <Input
-        placeholder="Search clients by name or email…"
-        className="max-w-xs"
+      <SearchInput
+        placeholder="Search clients by name, email, or phone…"
         value={search}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(event) => setSearch(event.target.value)}
       />
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
 
-      {loading ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
-      ) : !clients || clients.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">
-              No clients yet —{" "}
-              <Link
-                href="/clients/new"
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                create your first client
-              </Link>
-              .
-            </p>
-          </CardContent>
-        </Card>
+      {clients === null && !error ? (
+        <TableSkeleton />
+      ) : visibleClients.length === 0 ? (
+        <EmptyState
+          icon={search ? UsersRound : UserRoundPlus}
+          title={search ? "No matching clients" : "No clients yet"}
+          description={search ? "Try a different name, email address, or phone number." : "Add the first client record to begin generating documents."}
+          action={!search ? (
+            <Link href="/clients/new" className={cn(buttonVariants())}>
+              <UserRoundPlus aria-hidden="true" /> New client
+            </Link>
+          ) : undefined}
+        />
       ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Documents</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {clients.map((c) => (
-              <TableRow key={c.id} className="cursor-pointer">
-                <TableCell>
-                  <Link
-                    href={`/clients/${c.id}`}
-                    className="font-medium text-primary underline-offset-4 hover:underline"
-                  >
-                    {c.name}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {c.email ?? "—"}
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {c.phone ?? "—"}
-                </TableCell>
-                <TableCell>{c.generated_documents?.[0]?.count ?? 0}</TableCell>
-                <TableCell className="text-muted-foreground">
-                  {new Date(c.created_at).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
+        <>
+          <div className="grid gap-3 md:hidden">
+            {visibleClients.map((client) => (
+              <Link key={client.id} href={`/clients/${client.id}`} className="rounded-2xl border bg-card p-4 shadow-sm transition-colors hover:border-primary/20 hover:bg-primary/[0.02]">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-heading text-sm font-semibold">{client.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Added {new Date(client.created_at).toLocaleDateString()}</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-primary/[0.08] px-2 py-1 text-xs font-medium text-primary">
+                    <FileText className="size-3" aria-hidden="true" />
+                    {client.generated_documents?.[0]?.count ?? 0}
+                  </span>
+                </div>
+                <div className="mt-4 space-y-2 border-t pt-3 text-xs text-muted-foreground">
+                  <p className="flex items-center gap-2"><Mail className="size-3.5" aria-hidden="true" />{client.email ?? "No email"}</p>
+                  <p className="flex items-center gap-2"><Phone className="size-3.5" aria-hidden="true" />{client.phone ?? "No phone"}</p>
+                </div>
+              </Link>
             ))}
-          </TableBody>
-        </Table>
+          </div>
+          <div className="hidden overflow-hidden rounded-2xl border bg-card shadow-sm md:block">
+            <Table>
+              <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Documents</TableHead><TableHead>Created</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {visibleClients.map((client) => (
+                  <TableRow key={client.id}>
+                    <TableCell><Link href={`/clients/${client.id}`} className="font-medium text-primary underline-offset-4 hover:underline">{client.name}</Link></TableCell>
+                    <TableCell className="text-muted-foreground">{client.email ?? "—"}</TableCell>
+                    <TableCell className="text-muted-foreground">{client.phone ?? "—"}</TableCell>
+                    <TableCell>{client.generated_documents?.[0]?.count ?? 0}</TableCell>
+                    <TableCell className="text-muted-foreground">{new Date(client.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       )}
     </div>
   );

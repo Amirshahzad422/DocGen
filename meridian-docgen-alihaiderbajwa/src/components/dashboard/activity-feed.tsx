@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { FileClock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useFocusRefresh } from "@/lib/use-focus-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { InlineError, Skeleton } from "@/components/ui/states";
 
 type ActivityRow = {
   id: string;
@@ -54,17 +56,23 @@ export function ActivityFeed() {
         <CardTitle>Recent activity</CardTitle>
       </CardHeader>
       <CardContent>
-        {error && (
-          <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error}
-          </p>
-        )}
+        {error && <InlineError message={error} />}
         {rows === null && !error ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <div role="status" aria-label="Loading recent activity" className="space-y-4">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="flex items-center justify-between gap-3">
+                <div className="space-y-2"><Skeleton className="h-3.5 w-32" /><Skeleton className="h-3 w-24" /></div>
+                <Skeleton className="h-5 w-16 rounded-full" />
+              </div>
+            ))}
+            <span className="sr-only">Loading…</span>
+          </div>
         ) : rows && rows.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No documents generated yet.
-          </p>
+          <div className="flex min-h-44 flex-col items-center justify-center text-center">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground"><FileClock className="size-4" aria-hidden="true" /></div>
+            <p className="mt-3 text-sm font-medium">No recent activity</p>
+            <p className="mt-1 text-xs text-muted-foreground">Generated documents will appear here.</p>
+          </div>
         ) : (
           <ul className="space-y-3">
             {rows?.map((r) => (
