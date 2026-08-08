@@ -72,6 +72,8 @@ Sign in with a demo user (all use **password123**):
 
 ## Optional: deploy to Vercel
 
+Live demo: **https://meridian-docgen.vercel.app** (deployed 8 Aug 2026).
+
 1. Push to GitHub, import the repo at vercel.com.
 2. Add the two `NEXT_PUBLIC_*` env vars only (never `SUPABASE_SERVICE_ROLE_KEY`).
 3. Deploy. No other config required.
