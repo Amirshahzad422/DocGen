@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FileText, Mail, Phone, UserRoundPlus, UsersRound } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { buttonVariants } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search-input";
 import { EmptyState, InlineError, TableSkeleton } from "@/components/ui/states";
@@ -23,39 +24,46 @@ export function ClientList() {
   const [clients, setClients] = useState<ClientRow[] | null>(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
+  const debouncedSearch = useDebouncedValue(search);
 
   useEffect(() => {
     let cancelled = false;
-    supabase
+    let query = supabase
       .from("clients")
       .select("id, name, email, phone, created_at, generated_documents(count)")
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+    const term = debouncedSearch.trim();
+    if (term) {
+      const escaped = term.replace(/[(),]/g, " ");
+      query = query.or(`name.ilike.%${escaped}%,email.ilike.%${escaped}%,phone.ilike.%${escaped}%`);
+    }
+    query.then(({ data, error }) => {
         if (cancelled) return;
         if (error) setError(error.message);
-        else setClients((data ?? []) as ClientRow[]);
+        else {
+          setError(null);
+          setClients((data ?? []) as ClientRow[]);
+        }
+        setSearching(false);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [debouncedSearch]);
 
-  const visibleClients = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase();
-    if (!term) return clients ?? [];
-    return (clients ?? []).filter((client) =>
-      [client.name, client.email, client.phone].some((value) =>
-        value?.toLocaleLowerCase().includes(term),
-      ),
-    );
-  }, [clients, search]);
+  const visibleClients = clients ?? [];
 
   return (
     <div className="space-y-4">
       <SearchInput
         placeholder="Search clients by name, email, or phone…"
         value={search}
-        onChange={(event) => setSearch(event.target.value)}
+        aria-busy={searching}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setSearching(true);
+        }}
       />
 
       {error && <InlineError message={error} />}

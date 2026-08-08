@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FilePlus2, Files, Layers3 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useDebouncedValue } from "@/lib/use-debounced-value";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/search-input";
@@ -24,32 +25,35 @@ export function TemplateList() {
   const [templates, setTemplates] = useState<TemplateRow[] | null>(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
+  const debouncedSearch = useDebouncedValue(search);
 
   useEffect(() => {
     let cancelled = false;
-    supabase
+    let query = supabase
       .from("document_templates")
       .select("id, name, category, status, created_at, template_fields(id)")
       .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
+    const term = debouncedSearch.trim();
+    if (term) {
+      const escaped = term.replace(/[(),]/g, " ");
+      query = query.or(`name.ilike.%${escaped}%,category.ilike.%${escaped}%,status.ilike.%${escaped}%`);
+    }
+    query.then(({ data, error }) => {
         if (cancelled) return;
         if (error) setError(error.message);
-        else setTemplates((data ?? []) as TemplateRow[]);
+        else {
+          setError(null);
+          setTemplates((data ?? []) as TemplateRow[]);
+        }
+        setSearching(false);
       });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [debouncedSearch]);
 
-  const visibleTemplates = useMemo(() => {
-    const term = search.trim().toLocaleLowerCase();
-    if (!term) return templates ?? [];
-    return (templates ?? []).filter((template) =>
-      [template.name, template.category, template.status].some((value) =>
-        value.toLocaleLowerCase().includes(term),
-      ),
-    );
-  }, [search, templates]);
+  const visibleTemplates = templates ?? [];
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this template and its fields?")) return;
@@ -63,7 +67,15 @@ export function TemplateList() {
 
   return (
     <div className="space-y-4">
-      <SearchInput placeholder="Search templates, categories, or status…" value={search} onChange={(event) => setSearch(event.target.value)} />
+      <SearchInput
+        placeholder="Search templates, categories, or status…"
+        value={search}
+        aria-busy={searching}
+        onChange={(event) => {
+          setSearch(event.target.value);
+          setSearching(true);
+        }}
+      />
       {error && <InlineError message={error} />}
 
       {templates === null && !error ? (
