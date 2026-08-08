@@ -111,6 +111,19 @@ create policy "documents_update" on public.generated_documents
   using (public.current_role() in ('admin', 'attorney'))
   with check (public.current_role() in ('admin', 'attorney'));
 
+-- Paralegals (and any non-attorney) may only move drafts back and forth
+-- between draft/changes_requested/under_review — they can NEVER set a
+-- document to approved or finalized. Finalized docs also get finalized_at
+-- set only by attorneys (the write policy above).
+drop policy if exists "documents_update_paralegal" on public.generated_documents;
+create policy "documents_update_paralegal" on public.generated_documents
+  for update to authenticated
+  using (public.current_role() not in ('admin', 'attorney'))
+  with check (
+    not (public.current_role() in ('admin', 'attorney'))
+    and status in ('draft', 'under_review', 'changes_requested')
+  );
+
 drop policy if exists "documents_delete" on public.generated_documents;
 create policy "documents_delete" on public.generated_documents
   for delete to authenticated
