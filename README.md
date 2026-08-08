@@ -45,6 +45,8 @@ Next.js 15 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui · Rechart
    ```
    (Service role key: Project Settings → API. It is only used by this script, never by the app — the app runs on the anon key + RLS.)
 
+> **Verified: full rebuild works from committed SQL on 8 Aug 2026.** The three files were run in order against a fresh Postgres 16 instance (with a minimal stub of the Supabase `auth` schema) and produced: 3 roles, 3 templates, 17 template fields, 3 clients, 5 staff, 1 firm_settings row, RLS enabled on every table, and all 24 policies — including the `generated_documents_update_paralegal` policy that stops paralegals from approving/finalizing documents.
+
 ## Run the app locally
 
 ```bash

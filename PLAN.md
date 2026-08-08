@@ -2,7 +2,7 @@
 
 **Project:** Legal Document Generator for Meridian Legal Group
 **Internship:** VERXEON Technologies — Week 1 case study (Project 3)
-**Team:** Ali Haider Bajwa (Phases 1, 3, 5) + Warisha (Phases 2, 4)
+**Team:** Ali Haider Bajwa (Phases 1, 3, 5) + Arshia (Phases 2, 4)
 **Repo:** https://github.com/verxeon-ai/DocGen.git
 **Status:** In progress — Phase 1 (Foundation) active
 
@@ -74,16 +74,16 @@ Supabase
 | Phase | Title | Owner | Branch | Case-study tasks | Effort |
 |---|---|---|---|---|---|
 | **1** | Foundation: repo, scaffold, schema, seed | Ali | `alihaiderbajwa-docgen` | T1.1, T1.2 | ~1 day |
-| **2** | Templates & Dashboard | Warisha | `warisha-docgen` | T2.1, T2.2 | ~1.5 days |
+| **2** | Templates & Dashboard | Arshia | `arshia-docgen` | T2.1, T2.2 | ~1.5 days |
 | **3** | Clients & Wizard | Ali | `alihaiderbajwa-docgen` | T3.1, T3.2 | ~1.5 days |
-| **4** | Review & Staff / RLS | Warisha | `warisha-docgen` | T4.1, T4.2 | ~1.5 days |
+| **4** | Review & Staff / RLS | Arshia | `arshia-docgen` | T4.1, T4.2 | ~1.5 days |
 | **5** | Reports, Settings & Delivery | Ali | `alihaiderbajwa-docgen` | T5.1 | ~1 day |
 
 **Serial rule:** no overlap. The owner of phase N+1 branches from main only after phase N's PR is merged and tested. Full per-phase instructions live in `docs/phases/phase-N-*.md`.
 
 ## 6. Git Workflow
 
-1. Every phase works on the owner's branch: `alihaiderbajwa-docgen` / `warisha-docgen`.
+1. Every phase works on the owner's branch: `alihaiderbajwa-docgen` / `arshia-docgen`.
 2. Small, frequent commits with clear messages (`feat:`, `fix:`, `docs:`).
 3. After each phase: run the app, click through the test script in the phase doc, then open a PR to main.
 4. Code reaches main only after it is tested. Golden rule.
@@ -101,15 +101,15 @@ Supabase
 
 | # | Feature | Phase | Status |
 |---|---|---|---|
-| 1 | Interface built & connected | 1 | ☐ |
-| 2 | Database schema & SQL scripts | 1 | ☐ |
-| 3 | Live dashboard metrics | 2 | ☐ |
-| 4 | Template management | 2 | ☐ |
-| 5 | Dynamic template fields | 2 | ☐ |
-| 6 | Client management | 3 | ☐ |
-| 7 | Wizard & generation | 3 | ☐ |
-| 8 | Review workflow | 4 | ☐ |
-| 9 | Draft status tracking | 4 | ☐ |
-| 10 | Staff, roles & RLS | 4 | ☐ |
-| 11 | Reports | 5 | ☐ |
-| 12 | Settings | 5 | ☐ |
+| 1 | Interface built & connected | 1 | ☑ |
+| 2 | Database schema & SQL scripts | 1 | ☑ |
+| 3 | Live dashboard metrics | 2 | ☑ |
+| 4 | Template management | 2 | ☑ |
+| 5 | Dynamic template fields | 2 | ☑ |
+| 6 | Client management | 3 | ☑ |
+| 7 | Wizard & generation | 3 | ☑ |
+| 8 | Review workflow | 4 | ☑ |
+| 9 | Draft status tracking | 4 | ☑ |
+| 10 | Staff, roles & RLS | 4 | ☑ |
+| 11 | Reports | 5 | ☑ |
+| 12 | Settings | 5 | ☑ |
