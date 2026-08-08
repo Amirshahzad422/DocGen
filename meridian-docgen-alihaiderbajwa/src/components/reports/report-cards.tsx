@@ -82,7 +82,9 @@ export function ReportCards() {
         ),
       supabase
         .from("generated_documents")
-        .select("id, status, created_at, template_id(name), client_id(name)")
+        .select("id, status, created_at, template_id(name), client_id(name)", {
+          count: "exact",
+        })
         .in("status", ["draft", "under_review", "changes_requested"])
         .order("created_at", { ascending: true })
         .limit(5),
@@ -147,7 +149,7 @@ export function ReportCards() {
       })),
     );
 
-    setQueueCount((queueRes.data ?? []).length);
+    setQueueCount(queueRes.count ?? 0);
     setQueueRows(
       (queueRes.data ?? []).map((d) => ({
         id: d.id,
@@ -251,7 +253,7 @@ export function ReportCards() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Average time in review</CardTitle>
+            <CardTitle>Average time to finalize</CardTitle>
           </CardHeader>
           <CardContent>
             {avgReview === null && !error ? (

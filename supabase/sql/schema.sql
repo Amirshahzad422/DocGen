@@ -15,6 +15,12 @@ drop table if exists public.firm_settings cascade;
 
 create extension if not exists "pgcrypto";
 
+-- Privileged RLS helpers live outside the exposed public schema. Keeping
+-- security-definer functions private prevents them from becoming Data API
+-- endpoints while still allowing policies to use them.
+create schema if not exists private;
+revoke all on schema private from public, anon;
+
 -- ---------------------------------------------------------------------
 -- Roles (admin, attorney, paralegal)
 -- ---------------------------------------------------------------------
@@ -95,7 +101,11 @@ create table public.generated_documents (
   status       text not null default 'draft'
                check (status in ('draft', 'under_review', 'changes_requested', 'approved', 'finalized')),
   created_at   timestamptz not null default now(),
-  finalized_at timestamptz
+  finalized_at timestamptz,
+  constraint generated_documents_finalized_at_check check (
+    (status = 'finalized' and finalized_at is not null)
+    or (status <> 'finalized' and finalized_at is null)
+  )
 );
 
 create index generated_documents_status_idx on public.generated_documents (status);
@@ -116,6 +126,7 @@ create table public.review_comments (
 );
 
 create index review_comments_document_idx on public.review_comments (generated_document_id);
+create index review_comments_staff_idx on public.review_comments (staff_id);
 
 -- ---------------------------------------------------------------------
 -- Firm settings — single-row (id = 1) firm information
@@ -132,18 +143,71 @@ create table public.firm_settings (
 );
 
 -- ---------------------------------------------------------------------
--- Helper: current caller's role name (used by RLS policies in policies.sql)
+-- Helpers for the current authenticated staff member (used by policies.sql)
 -- ---------------------------------------------------------------------
-create or replace function public.current_role()
+drop function if exists public.current_role();
+
+create or replace function private.current_staff_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.id
+  from public.staff s
+  where s.user_id = (select auth.uid())
+    and s.active = true;
+$$;
+
+create or replace function private.current_role_id()
+returns uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.role_id
+  from public.staff s
+  where s.user_id = (select auth.uid())
+    and s.active = true;
+$$;
+
+create or replace function private.current_role()
 returns text
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select r.name
   from public.staff s
   join public.roles r on r.id = s.role_id
-  where s.user_id = auth.uid()
+  where s.user_id = (select auth.uid())
     and s.active = true;
 $$;
+
+create or replace function private.is_active_staff()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.staff s
+    where s.user_id = (select auth.uid())
+      and s.active = true
+  );
+$$;
+
+revoke all on function private.current_staff_id() from public, anon;
+revoke all on function private.current_role_id() from public, anon;
+revoke all on function private.current_role() from public, anon;
+revoke all on function private.is_active_staff() from public, anon;
+grant usage on schema private to authenticated;
+grant execute on function private.current_staff_id() to authenticated;
+grant execute on function private.current_role_id() to authenticated;
+grant execute on function private.current_role() to authenticated;
+grant execute on function private.is_active_staff() to authenticated;
