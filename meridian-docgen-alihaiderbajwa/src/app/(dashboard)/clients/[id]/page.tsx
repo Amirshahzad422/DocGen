@@ -6,7 +6,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { PageHeader } from "@/components/ui/page-header";
 import { buttonVariants } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -174,7 +174,7 @@ export default function ClientDetailPage() {
                         {d.template_id?.name ?? "Unknown template"}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{d.status}</Badge>
+                        <StatusBadge status={d.status} />
                       </TableCell>
                       <TableCell className="text-muted-foreground">
                         {new Date(d.created_at).toLocaleDateString()}

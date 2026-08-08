@@ -20,7 +20,7 @@ insert into public.staff (name, email, role_id, active) values
   ('Ali Haider Bajwa',  'admin@meridian.demo',      '00000000-0000-0000-0000-000000000001', true),
   ('Ayesha Tariq',      'attorney@meridian.demo',   '00000000-0000-0000-0000-000000000002', true),
   ('Kamran Adeel',      'k.adeel@meridian.demo',    '00000000-0000-0000-0000-000000000002', true),
-  ('Warisha Khan',      'paralegal@meridian.demo',  '00000000-0000-0000-0000-000000000003', true),
+  ('Arshia Khan',      'paralegal@meridian.demo',  '00000000-0000-0000-0000-000000000003', true),
   ('Sana Rizvi',        's.rizvi@meridian.demo',    '00000000-0000-0000-0000-000000000003', true)
 on conflict (email) do nothing;
 

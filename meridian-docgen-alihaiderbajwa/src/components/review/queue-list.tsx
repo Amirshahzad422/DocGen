@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
@@ -30,12 +30,6 @@ const FILTERS = [
   { key: "under_review", label: "Under review" },
   { key: "changes_requested", label: "Changes requested" },
 ];
-
-const STATUS_VARIANT: Record<string, "secondary" | "outline" | "destructive"> = {
-  draft: "secondary",
-  under_review: "outline",
-  changes_requested: "destructive",
-};
 
 export function QueueList() {
   const [rows, setRows] = useState<QueueRow[] | null>(null);
@@ -133,9 +127,7 @@ export function QueueList() {
                   {r.client_id?.name ?? "Unknown client"}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={STATUS_VARIANT[r.status] ?? "secondary"}>
-                    {r.status}
-                  </Badge>
+                  <StatusBadge status={r.status} />
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {r.created_by?.name ?? "—"}

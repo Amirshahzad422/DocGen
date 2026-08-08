@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -197,7 +197,7 @@ export default function DocumentPage() {
       />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <Badge>{doc.status}</Badge>
+        <StatusBadge status={doc.status} />
         {doc.finalized_at && (
           <span className="text-xs text-muted-foreground">
             Finalized {new Date(doc.finalized_at).toLocaleString()}

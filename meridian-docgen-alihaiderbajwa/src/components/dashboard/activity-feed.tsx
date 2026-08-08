@@ -4,7 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useFocusRefresh } from "@/lib/use-focus-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 
 type ActivityRow = {
   id: string;
@@ -77,7 +77,7 @@ export function ActivityFeed() {
                     {r.client_id?.name ?? "Unknown client"} · {timeAgo(r.created_at)}
                   </p>
                 </div>
-                <Badge variant="secondary">{r.status}</Badge>
+                <StatusBadge status={r.status} />
               </li>
             ))}
           </ul>
