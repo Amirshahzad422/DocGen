@@ -104,7 +104,9 @@ export function Charts() {
                   <Line
                     type="monotone"
                     dataKey="count"
-                    stroke="hsl(var(--primary))"
+                    stroke="var(--chart-1)"
+                    strokeWidth={2.5}
+                    dot={{ fill: "var(--card)", strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -135,7 +137,7 @@ export function Charts() {
                   <Tooltip />
                   <Bar
                     dataKey="count"
-                    fill="hsl(var(--primary))"
+                    fill="var(--chart-1)"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>

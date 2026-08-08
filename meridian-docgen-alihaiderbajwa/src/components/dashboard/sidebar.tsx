@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   Scale,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -32,9 +33,13 @@ const nav = [
 export default function Sidebar({
   userName,
   userEmail,
+  className,
+  onNavigate,
 }: {
   userName?: string | null;
   userEmail?: string | null;
+  className?: string;
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -46,16 +51,21 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col border-r bg-card">
-      <div className="flex items-center gap-2 border-b px-4 py-4">
-        <Scale className="h-6 w-6 text-primary" />
+    <aside className={cn("sticky top-0 flex h-screen w-72 shrink-0 flex-col border-r bg-card/95", className)}>
+      <div className="flex h-20 items-center gap-3 border-b px-5">
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <Scale className="size-5" aria-hidden="true" />
+        </div>
         <div>
-          <p className="text-sm font-semibold leading-tight">Meridian DocGen</p>
-          <p className="text-xs text-muted-foreground">Legal Document Generator</p>
+          <p className="font-heading text-sm font-semibold leading-tight">Meridian DocGen</p>
+          <p className="mt-0.5 text-[0.68rem] uppercase tracking-[0.13em] text-muted-foreground">Legal workspace</p>
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+      <div className="px-5 pb-2 pt-5 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        Workspace
+      </div>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-3" aria-label="Primary navigation">
         {nav.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -64,21 +74,25 @@ export default function Sidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                active && "bg-primary/10 text-primary hover:bg-primary/10 hover:text-primary",
+                "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-muted hover:text-foreground",
+                active && "bg-primary/[0.08] text-primary shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--primary)_10%,transparent)] hover:bg-primary/[0.1] hover:text-primary",
               )}
+              aria-current={active ? "page" : undefined}
+              onClick={onNavigate}
             >
-              <Icon className="h-4 w-4" />
+              {active && <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-primary" />}
+              <Icon className="size-4 transition-transform group-hover:scale-105" aria-hidden="true" />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t p-3">
-        <div className="mb-2 flex items-center gap-2 px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-primary">
+      <div className="border-t bg-muted/25 p-3">
+        <div className="mb-2 flex items-center gap-2.5 rounded-xl px-2 py-1.5">
+          <div className="relative flex size-9 items-center justify-center rounded-xl bg-primary/10 text-sm font-semibold text-primary ring-1 ring-primary/10">
             {(userName ?? "?")[0]}
+            <Sparkles className="absolute -right-1 -top-1 size-3 rounded-full bg-card p-0.5 text-primary" aria-hidden="true" />
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{userName ?? "User"}</p>

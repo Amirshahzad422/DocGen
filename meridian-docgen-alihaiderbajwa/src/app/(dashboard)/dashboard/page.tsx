@@ -8,7 +8,7 @@ export default function DashboardPage() {
     <>
       <PageHeader
         title="Dashboard"
-        description="Live numbers from the database."
+        description="A live view of document production, review work, and recent activity."
       />
       <MetricCards />
       <div className="mt-6 grid gap-6 lg:grid-cols-5">
