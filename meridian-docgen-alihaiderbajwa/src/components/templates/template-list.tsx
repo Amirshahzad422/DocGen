@@ -91,7 +91,7 @@ export function TemplateList() {
         <>
           <div className="grid gap-3 md:hidden">
             {visibleTemplates.map((template) => (
-              <div key={template.id} className="rounded-2xl border bg-card p-4 shadow-sm">
+              <div key={template.id} className="rounded-2xl border bg-card p-4 shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)] transition-all hover:-translate-y-0.5">
                 <div className="flex items-start justify-between gap-3">
                   <div><p className="font-heading text-sm font-semibold">{template.name}</p><p className="mt-1 text-xs text-muted-foreground">{template.category}</p></div>
                   <Badge variant={template.status === "active" ? "default" : "secondary"}>{template.status}</Badge>
@@ -106,7 +106,7 @@ export function TemplateList() {
               </div>
             ))}
           </div>
-          <div className="hidden overflow-hidden rounded-2xl border bg-card shadow-sm md:block">
+          <div className="hidden overflow-hidden rounded-2xl border bg-card shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)] md:block">
             <Table>
               <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Category</TableHead><TableHead>Status</TableHead><TableHead>Fields</TableHead><TableHead>Created</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
               <TableBody>

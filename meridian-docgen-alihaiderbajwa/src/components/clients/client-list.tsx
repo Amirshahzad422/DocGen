@@ -85,7 +85,7 @@ export function ClientList() {
         <>
           <div className="grid gap-3 md:hidden">
             {visibleClients.map((client) => (
-              <Link key={client.id} href={`/clients/${client.id}`} className="rounded-2xl border bg-card p-4 shadow-sm transition-colors hover:border-primary/20 hover:bg-primary/[0.02]">
+              <Link key={client.id} href={`/clients/${client.id}`} className="rounded-2xl border bg-card p-4 shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)] transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:bg-primary/[0.02]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate font-heading text-sm font-semibold">{client.name}</p>
@@ -103,7 +103,7 @@ export function ClientList() {
               </Link>
             ))}
           </div>
-          <div className="hidden overflow-hidden rounded-2xl border bg-card shadow-sm md:block">
+          <div className="hidden overflow-hidden rounded-2xl border bg-card shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)] md:block">
             <Table>
               <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>Phone</TableHead><TableHead>Documents</TableHead><TableHead>Created</TableHead></TableRow></TableHeader>
               <TableBody>
