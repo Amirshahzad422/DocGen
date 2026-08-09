@@ -81,18 +81,6 @@ create policy "staff_self_update" on public.staff
     and active = true
   );
 
--- Staff can edit their own profile (name, email) but never their role or
--- active flag (no privilege escalation from the Settings page).
-drop policy if exists "staff_self_update" on public.staff;
-create policy "staff_self_update" on public.staff
-  for update to authenticated
-  using (user_id = auth.uid())
-  with check (
-    user_id = auth.uid()
-    and role_id = (select role_id from public.staff where user_id = auth.uid())
-    and active = (select active from public.staff where user_id = auth.uid())
-  );
-
 -- ---------------------------------------------------------------------
 -- document_templates — admin/attorney manage, everyone reads
 -- ---------------------------------------------------------------------
