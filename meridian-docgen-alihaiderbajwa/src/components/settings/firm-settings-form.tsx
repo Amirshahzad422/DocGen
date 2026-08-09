@@ -78,7 +78,17 @@ export function FirmSettingsForm() {
         setError(rErr.message);
         return;
       }
-      setFirm((firmData as unknown as FirmSettings | null) ?? null);
+      const firmRow = firmData as unknown as FirmSettings | null;
+      setFirm(
+        firmRow && {
+          ...firmRow,
+          tagline: firmRow.tagline ?? "",
+          address: firmRow.address ?? "",
+          phone: firmRow.phone ?? "",
+          email: firmRow.email ?? "",
+          logo_url: firmRow.logo_url ?? "",
+        },
+      );
       setRoles((roleData ?? []) as RoleRow[]);
 
       if (user?.id) {
