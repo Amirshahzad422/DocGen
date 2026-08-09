@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { InlineError } from "@/components/ui/states";
 
 export type ClientFormData = {
   name: string;
@@ -140,11 +141,7 @@ export function ClientForm({ mode, initial, clientId }: Props) {
         />
       </div>
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={saving}>

@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/states";
 import { cn } from "@/lib/utils";
 
 type ClientDetail = {
@@ -92,7 +93,20 @@ export default function ClientDetailPage() {
   }
 
   if (!client) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return (
+      <div role="status" aria-label="Loading client" className="space-y-6">
+        <div className="mb-2 border-b pb-5">
+          <Skeleton className="mb-3 h-2.5 w-32" />
+          <Skeleton className="h-8 w-56" />
+          <Skeleton className="mt-3 h-3.5 w-full max-w-md" />
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Skeleton className="h-56 rounded-2xl lg:col-span-1" />
+          <Skeleton className="h-56 rounded-2xl lg:col-span-2" />
+        </div>
+        <span className="sr-only">Loading…</span>
+      </div>
+    );
   }
 
   return (
@@ -145,7 +159,11 @@ export default function ClientDetailPage() {
           </CardHeader>
           <CardContent>
             {docs === null ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <div className="space-y-2">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <Skeleton key={index} className="h-11 w-full rounded-lg" />
+                ))}
+              </div>
             ) : docs.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 No documents yet — generate one via the{" "}

@@ -33,6 +33,23 @@ export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
+export function FormSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <div role="status" aria-label="Loading form" className="max-w-2xl space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        {Array.from({ length: rows }, (_, index) => (
+          <div key={index} className="space-y-1.5">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+        ))}
+      </div>
+      <Skeleton className="h-9 w-32 rounded-lg" />
+      <span className="sr-only">Loading…</span>
+    </div>
+  );
+}
+
 export function EmptyState({
   icon: Icon,
   title,

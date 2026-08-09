@@ -7,6 +7,7 @@ import { useFocusRefresh } from "@/lib/use-focus-refresh";
 import { CountUp } from "@/components/react-bits/count-up";
 import { SpotlightCard } from "@/components/react-bits/spotlight-card";
 import { Button } from "@/components/ui/button";
+import { InlineError } from "@/components/ui/states";
 
 type Counts = {
   templates: number | null;
@@ -103,11 +104,7 @@ export function MetricCards() {
           <RefreshCw className={refreshing ? "animate-spin" : ""} aria-hidden="true" />
           {refreshing ? "Refreshing" : "Refresh metrics"}
         </Button>
-        {error && (
-          <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error}
-          </p>
-        )}
+        {error && <InlineError message={error} />}
       </div>
     </div>
   );

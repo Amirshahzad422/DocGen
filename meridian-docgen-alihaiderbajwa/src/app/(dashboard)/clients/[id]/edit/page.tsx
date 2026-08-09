@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { PageHeader } from "@/components/ui/page-header";
 import { ClientForm, type ClientFormData } from "@/components/clients/client-form";
 import { Card, CardContent } from "@/components/ui/card";
+import { FormSkeleton } from "@/components/ui/states";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -63,7 +64,12 @@ export default function EditClientPage() {
   }
 
   if (!initial) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return (
+      <>
+        <PageHeader title="Edit client" description="Update this client's contact details." />
+        <FormSkeleton />
+      </>
+    );
   }
 
   return (

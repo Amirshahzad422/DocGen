@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FieldBuilder } from "@/components/templates/field-builder";
+import { InlineError } from "@/components/ui/states";
 import { type TemplateFormState } from "@/lib/template-types";
 
 const CATEGORIES = ["Estate Planning", "Corporate", "Real Estate", "Other"];
@@ -207,11 +208,7 @@ export function TemplateForm({ mode, initial, templateId }: Props) {
         />
       </div>
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={saving}>

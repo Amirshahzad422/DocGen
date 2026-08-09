@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { TemplateForm } from "@/components/templates/template-form";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { FormSkeleton } from "@/components/ui/states";
 import { cn } from "@/lib/utils";
 import {
   type TemplateFieldDraft,
@@ -95,7 +96,12 @@ export default function EditTemplatePage() {
   }
 
   if (!initial) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return (
+      <>
+        <PageHeader title="Edit template" description="Update the template structure and its dynamic fields." />
+        <FormSkeleton rows={2} />
+      </>
+    );
   }
 
   return (
