@@ -131,7 +131,7 @@ export default function WizardFormPage() {
       );
     });
     return () => mm.revert();
-  }, [step]);
+  }, [step, loading]);
 
   function validateStep(stepFields: WizardField[]): string | null {
     for (const f of stepFields) {

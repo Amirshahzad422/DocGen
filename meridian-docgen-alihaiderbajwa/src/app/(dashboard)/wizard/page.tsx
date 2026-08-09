@@ -71,7 +71,7 @@ export default function WizardPage() {
             <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary/65">Step 1</p><h2 id="choose-template-heading" className="mt-1 font-heading text-lg font-semibold">Choose a template</h2></div>
             {selectedTemplateData && <Badge variant="secondary"><Check aria-hidden="true" /> Selected</Badge>}
           </div>
-          {templates === null && !error ? (
+          {error ? null : templates === null ? (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 3 }, (_, index) => <Skeleton key={index} className="h-40 rounded-2xl" />)}</div>
           ) : templates?.length === 0 ? (
             <EmptyState icon={FileText} title="No active templates" description="Create and activate a template before starting a document." action={<Link href="/templates/new" className={cn(buttonVariants())}>Create template</Link>} />

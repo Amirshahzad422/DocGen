@@ -36,11 +36,13 @@ export default function Sidebar({
   userEmail,
   className,
   onNavigate,
+  showThemeToggle = true,
 }: {
   userName?: string | null;
   userEmail?: string | null;
   className?: string;
   onNavigate?: () => void;
+  showThemeToggle?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -104,7 +106,7 @@ export default function Sidebar({
           <Button variant="ghost" size="sm" className="flex-1 justify-start text-muted-foreground" onClick={signOut}>
             <LogOut className="mr-2 h-4 w-4" /> Sign out
           </Button>
-          <ThemeToggle />
+          {showThemeToggle && <ThemeToggle />}
         </div>
       </div>
     </aside>

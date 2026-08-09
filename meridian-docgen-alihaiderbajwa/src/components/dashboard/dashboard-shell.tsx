@@ -99,6 +99,7 @@ export function DashboardShell({
           userEmail={userEmail}
           className="w-full"
           onNavigate={() => setNavigationOpen(false)}
+          showThemeToggle={false}
         />
       </div>
 

@@ -51,7 +51,7 @@ export default function LoginPage() {
     setLoading(false);
     if (error) {
       const invalidCredentials = error.message.toLowerCase().includes("invalid login");
-      setError(invalidCredentials ? "The email or password is incorrect." : "We couldn’t sign you in. Try again or contact your administrator.");
+      setError(invalidCredentials ? "The email or password is incorrect." : error.message || "We couldn’t sign you in. Try again or contact your administrator.");
       return;
     }
     router.push("/dashboard");
