@@ -180,8 +180,7 @@ export function StaffList() {
             </div>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            New staff are created without an auth login. Link an auth user via
-            scripts/create-demo-users.mjs or manual SQL.
+            New staff access must be activated by an administrator before they can sign in.
           </p>
         </CardContent>
       </Card>
@@ -267,8 +266,7 @@ export function StaffList() {
         </CardHeader>
         <CardContent>
           <p className="mb-3 text-sm text-muted-foreground">
-            Roles gate permissions via row-level security. New roles must be
-            added in SQL (supabase/sql/seed.sql) to keep policies predictable.
+            Roles determine which workspace actions each staff member can perform.
           </p>
           <ul className="space-y-2">
             {roles.map((r) => (

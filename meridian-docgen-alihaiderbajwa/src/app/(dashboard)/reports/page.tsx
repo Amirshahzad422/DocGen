@@ -6,7 +6,7 @@ export default function ReportsPage() {
     <>
       <PageHeader
         title="Reports"
-        description="Live aggregates: per-month trends, top templates, review times, and queue."
+        description="Document trends, popular templates, review times, and outstanding work."
       />
       <ReportCards />
     </>

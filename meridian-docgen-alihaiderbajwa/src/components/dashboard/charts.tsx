@@ -109,7 +109,7 @@ export function Charts() {
               </ResponsiveContainer>
               {(overTime ?? []).every((p) => p.count === 0) && (
                 <p className="mt-2 text-center text-xs text-muted-foreground">
-                  Generate documents in Phase 3 to see charts fill in
+                  Your document trend will appear after the first draft is created
                 </p>
               )}
             </>
@@ -141,7 +141,7 @@ export function Charts() {
               </ResponsiveContainer>
               {(byTemplate ?? []).length === 0 && (
                 <p className="mt-2 text-center text-xs text-muted-foreground">
-                  Generate documents in Phase 3 to see charts fill in
+                  Template usage will appear after the first draft is created
                 </p>
               )}
             </>

@@ -241,8 +241,7 @@ export function FirmSettingsForm() {
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-sm text-muted-foreground">
-              New roles are added via SQL (supabase/sql/seed.sql) so the RLS
-              policies stay predictable.
+              Roles define the workspace access available to each member of staff.
             </p>
             {roles === null ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
@@ -286,7 +285,7 @@ export function FirmSettingsForm() {
                   <p className="text-sm font-medium">{profile.roles?.name ?? "—"}</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Auth email (read-only)</Label>
+                  <Label>Sign-in email (read-only)</Label>
                   <p className="text-sm text-muted-foreground">{profile.auth_email}</p>
                 </div>
                 <div className="sm:col-span-2">
