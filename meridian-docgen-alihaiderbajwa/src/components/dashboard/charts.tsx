@@ -94,10 +94,15 @@ export function Charts() {
             <>
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={overTime ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="month" stroke="var(--border)" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickLine={false} />
+                  <YAxis allowDecimals={false} stroke="var(--border)" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickLine={false} width={28} />
+                  <Tooltip
+                    cursor={{ stroke: "var(--border)" }}
+                    contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, boxShadow: "0 18px 45px -30px rgba(0,0,0,0.35)" }}
+                    labelStyle={{ color: "var(--popover-foreground)", fontWeight: 600, marginBottom: 4 }}
+                    itemStyle={{ color: "var(--muted-foreground)" }}
+                  />
                   <Line
                     type="monotone"
                     dataKey="count"
@@ -128,10 +133,15 @@ export function Charts() {
             <>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={byTemplate ?? []}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                  <XAxis dataKey="name" stroke="var(--border)" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickLine={false} />
+                  <YAxis allowDecimals={false} stroke="var(--border)" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} tickLine={false} width={28} />
+                  <Tooltip
+                    cursor={{ fill: "var(--muted)" }}
+                    contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, boxShadow: "0 18px 45px -30px rgba(0,0,0,0.35)" }}
+                    labelStyle={{ color: "var(--popover-foreground)", fontWeight: 600, marginBottom: 4 }}
+                    itemStyle={{ color: "var(--muted-foreground)" }}
+                  />
                   <Bar
                     dataKey="count"
                     fill="var(--chart-1)"

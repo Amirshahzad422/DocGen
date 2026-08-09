@@ -20,7 +20,7 @@ import { supabase } from "@/lib/supabase";
 import { useFocusRefresh } from "@/lib/use-focus-refresh";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { Clock3, Inbox, RefreshCw, TrendingUp } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -30,6 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { EmptyState, InlineError, Skeleton, TableSkeleton } from "@/components/ui/states";
 
 type MonthPoint = { month: string; count: number };
 type TemplatePoint = { name: string; count: number };
@@ -43,6 +44,21 @@ const STATUS_COLORS: Record<string, string> = {
   approved: "hsl(142 70% 42%)",
   finalized: "hsl(220 90% 56%)",
 };
+
+const CARD_SHADOW = "shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)]";
+
+const chartTooltipProps = {
+  contentStyle: {
+    background: "var(--popover)",
+    border: "1px solid var(--border)",
+    borderRadius: 12,
+    boxShadow: "0 18px 45px -30px rgba(0,0,0,0.35)",
+  },
+  labelStyle: { color: "var(--popover-foreground)", fontWeight: 600, marginBottom: 4 },
+  itemStyle: { color: "var(--muted-foreground)" },
+} as const;
+
+const axisTick = { fill: "var(--muted-foreground)", fontSize: 12 } as const;
 
 function lastSixMonths(): { key: string; label: string }[] {
   const out: { key: string; label: string }[] = [];
@@ -175,37 +191,40 @@ export function ReportCards() {
     <div className="space-y-6">
       <div className="flex justify-end">
         <Button variant="outline" size="sm" onClick={refresh} disabled={refreshing}>
-          <RefreshCw className={`mr-2 h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+          <RefreshCw className={refreshing ? "animate-spin" : ""} aria-hidden="true" />
           Refresh
         </Button>
       </div>
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
-            <CardTitle>Documents generated per month</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
+                <TrendingUp className="size-4" aria-hidden="true" />
+              </div>
+              <CardTitle>Documents generated per month</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {overTime === null && !error ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <Skeleton className="h-[240px] w-full rounded-xl" />
             ) : (
               <>
                 <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={overTime ?? []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="month" stroke="var(--border)" tick={axisTick} tickLine={false} />
+                    <YAxis allowDecimals={false} stroke="var(--border)" tick={axisTick} tickLine={false} width={28} />
+                    <Tooltip cursor={{ stroke: "var(--border)" }} {...chartTooltipProps} />
                     <Line
                       type="monotone"
                       dataKey="count"
-                      stroke="hsl(var(--primary))"
+                      stroke="var(--primary)"
+                      strokeWidth={2.5}
+                      dot={{ fill: "var(--card)", strokeWidth: 2 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -219,24 +238,29 @@ export function ReportCards() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
-            <CardTitle>Most-used templates</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                <TrendingUp className="size-4" aria-hidden="true" />
+              </div>
+              <CardTitle>Most-used templates</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {byTemplate === null && !error ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <Skeleton className="h-[240px] w-full rounded-xl" />
             ) : (
               <>
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={byTemplate ?? []} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" allowDecimals={false} />
-                    <YAxis type="category" dataKey="name" width={130} />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis type="number" allowDecimals={false} stroke="var(--border)" tick={axisTick} tickLine={false} />
+                    <YAxis type="category" dataKey="name" width={130} stroke="var(--border)" tick={axisTick} tickLine={false} />
+                    <Tooltip cursor={{ fill: "var(--muted)" }} {...chartTooltipProps} />
                     <Bar
                       dataKey="count"
-                      fill="hsl(var(--primary))"
+                      fill="var(--primary)"
                       radius={[0, 4, 4, 0]}
                     />
                   </BarChart>
@@ -251,16 +275,21 @@ export function ReportCards() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
-            <CardTitle>Average time to finalize</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-amber-500/12 text-amber-700 dark:text-amber-300">
+                <Clock3 className="size-4" aria-hidden="true" />
+              </div>
+              <CardTitle>Average time to finalize</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {avgReview === null && !error ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <Skeleton className="h-[240px] w-full rounded-xl" />
             ) : (
               <div className="flex h-[240px] flex-col items-center justify-center">
-                <p className="text-4xl font-semibold">{avgReview}</p>
+                <p className="font-heading text-4xl font-semibold tracking-[-0.04em]">{avgReview}</p>
                 <p className="mt-2 text-xs text-muted-foreground">
                   from finalized documents
                 </p>
@@ -269,13 +298,18 @@ export function ReportCards() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
-            <CardTitle>Status distribution</CardTitle>
+            <div className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-violet-500/12 text-violet-700 dark:text-violet-300">
+                <Inbox className="size-4" aria-hidden="true" />
+              </div>
+              <CardTitle>Status distribution</CardTitle>
+            </div>
           </CardHeader>
           <CardContent>
             {byStatus === null && !error ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <Skeleton className="h-[240px] w-full rounded-xl" />
             ) : (
               <>
                 <ResponsiveContainer width="100%" height={240}>
@@ -289,11 +323,11 @@ export function ReportCards() {
                       paddingAngle={2}
                     >
                       {(byStatus ?? []).map((s) => (
-                        <Cell key={s.name} fill={s.color} />
+                        <Cell key={s.name} fill={s.color} stroke="var(--card)" strokeWidth={2} />
                       ))}
                     </Pie>
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip {...chartTooltipProps} />
+                    <Legend wrapperStyle={{ fontSize: 12, color: "var(--muted-foreground)" }} />
                   </PieChart>
                 </ResponsiveContainer>
                 {(byStatus ?? []).length === 0 && (
@@ -307,7 +341,7 @@ export function ReportCards() {
         </Card>
       </div>
 
-      <Card>
+      <Card className={CARD_SHADOW}>
         <CardHeader>
           <CardTitle>
             Outstanding review queue{" "}
@@ -320,11 +354,13 @@ export function ReportCards() {
         </CardHeader>
         <CardContent>
           {queueRows === null && !error ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
+            <TableSkeleton rows={3} />
           ) : (queueRows ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nothing in the queue — all documents are finalized.
-            </p>
+            <EmptyState
+              icon={Inbox}
+              title="Queue is clear"
+              description="Nothing outstanding — every document is finalized."
+            />
           ) : (
             <Table>
               <TableHeader>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ShieldCheck, UserPlus, UsersRound } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InlineError, TableSkeleton } from "@/components/ui/states";
 import {
   Table,
   TableBody,
@@ -22,6 +24,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+const CARD_SHADOW = "shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)]";
 
 type StaffRow = {
   id: string;
@@ -64,6 +68,7 @@ export function StaffList() {
   }
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
       const [sRes, rRes] = await Promise.all([
         supabase
@@ -72,6 +77,7 @@ export function StaffList() {
           .order("created_at", { ascending: false }),
         supabase.from("roles").select("id, name, description").order("name"),
       ]);
+      if (cancelled) return;
       if (sRes.error) setError(sRes.error.message);
       else if (rRes.error) setError(rRes.error.message);
       else {
@@ -79,7 +85,9 @@ export function StaffList() {
         setRoles((rRes.data ?? []) as { id: string; name: string; description: string | null }[]);
       }
     })();
-    return () => {};
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function createStaff() {
@@ -132,9 +140,14 @@ export function StaffList() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className={CARD_SHADOW}>
         <CardHeader>
-          <CardTitle>Add staff member</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-primary/[0.08] text-primary">
+              <UserPlus className="size-4" aria-hidden="true" />
+            </div>
+            <CardTitle>Add staff member</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid gap-3 sm:grid-cols-4">
@@ -174,30 +187,32 @@ export function StaffList() {
               </Select>
             </div>
             <div className="flex items-end">
-              <Button onClick={createStaff} disabled={creating}>
+              <Button onClick={createStaff} disabled={creating} className="w-full">
                 {creating ? "Adding…" : "Add staff"}
               </Button>
             </div>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            New staff access must be activated by an administrator before they can sign in.
+          <p className="mt-3 text-xs text-muted-foreground">
+            New staff are created without an auth login. Link an auth user via
+            scripts/create-demo-users.mjs or manual SQL before they can sign in.
           </p>
         </CardContent>
       </Card>
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
 
-      <Card>
+      <Card className={CARD_SHADOW}>
         <CardHeader>
-          <CardTitle>Staff directory</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-700 dark:text-blue-300">
+              <UsersRound className="size-4" aria-hidden="true" />
+            </div>
+            <CardTitle>Staff directory</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           {staff === null ? (
-            <p className="text-sm text-muted-foreground">Loading…</p>
+            <TableSkeleton rows={4} />
           ) : (
             <Table>
               <TableHeader>
@@ -260,19 +275,26 @@ export function StaffList() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className={CARD_SHADOW}>
         <CardHeader>
-          <CardTitle>Roles</CardTitle>
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+              <ShieldCheck className="size-4" aria-hidden="true" />
+            </div>
+            <CardTitle>Roles</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
           <p className="mb-3 text-sm text-muted-foreground">
             Roles determine which workspace actions each staff member can perform.
+            New roles are added via SQL (supabase/sql/seed.sql) so the RLS policies
+            stay predictable.
           </p>
-          <ul className="space-y-2">
+          <ul className="grid gap-2 sm:grid-cols-3">
             {roles.map((r) => (
-              <li key={r.id} className="rounded-md border px-3 py-2">
-                <span className="text-sm font-medium">{r.name}</span>
-                <p className="text-xs text-muted-foreground">{r.description}</p>
+              <li key={r.id} className="rounded-xl border bg-muted/[0.18] px-3.5 py-2.5">
+                <span className="text-sm font-medium capitalize">{r.name}</span>
+                <p className="mt-0.5 text-xs text-muted-foreground">{r.description}</p>
               </li>
             ))}
           </ul>

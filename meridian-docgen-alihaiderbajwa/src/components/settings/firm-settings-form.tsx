@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckCircle2, Landmark, ShieldCheck, UserRound } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormSkeleton, InlineError } from "@/components/ui/states";
+import { cn } from "@/lib/utils";
+
+const CARD_SHADOW = "shadow-[0_18px_50px_-34px_color-mix(in_oklch,var(--foreground)_38%,transparent)]";
+
+const TABS = [
+  { key: "firm" as const, label: "Firm info", icon: Landmark },
+  { key: "roles" as const, label: "Roles", icon: ShieldCheck },
+  { key: "profile" as const, label: "Profile", icon: UserRound },
+];
 
 type FirmSettings = {
   id: number;
@@ -137,46 +148,42 @@ export function FirmSettingsForm() {
     setSaved("Profile saved.");
   }
 
-  const tabClass = (t: string) =>
-    `rounded-md px-3 py-1.5 text-sm font-medium ${
-      tab === t
-        ? "bg-primary text-primary-foreground"
-        : "text-muted-foreground hover:bg-muted"
-    }`;
-
   return (
     <div className="space-y-6">
-      <div className="flex gap-1 rounded-lg border bg-card p-1">
-        <button className={tabClass("firm")} onClick={() => setTab("firm")}>
-          Firm info
-        </button>
-        <button className={tabClass("roles")} onClick={() => setTab("roles")}>
-          Roles
-        </button>
-        <button className={tabClass("profile")} onClick={() => setTab("profile")}>
-          Profile
-        </button>
+      <div className="inline-flex gap-1 rounded-xl border bg-card p-1 shadow-sm">
+        {TABS.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={cn(
+              "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+              tab === key
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}
+          >
+            <Icon className="size-3.5" aria-hidden="true" />
+            {label}
+          </button>
+        ))}
       </div>
 
-      {error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      )}
+      {error && <InlineError message={error} />}
       {saved && (
-        <p className="rounded-md bg-emerald-500/10 px-3 py-2 text-sm text-emerald-600">
-          {saved}
-        </p>
+        <div role="status" className="flex items-center gap-2.5 rounded-xl border border-emerald-500/15 bg-emerald-500/[0.07] px-3.5 py-3 text-sm text-emerald-700 dark:text-emerald-400">
+          <CheckCircle2 className="size-4 shrink-0" aria-hidden="true" />
+          <p>{saved}</p>
+        </div>
       )}
 
       {tab === "firm" && (
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
             <CardTitle>Firm information</CardTitle>
           </CardHeader>
           <CardContent>
             {firm === null ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <FormSkeleton rows={4} />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
@@ -235,22 +242,28 @@ export function FirmSettingsForm() {
       )}
 
       {tab === "roles" && (
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
             <CardTitle>Roles</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="mb-4 text-sm text-muted-foreground">
               Roles define the workspace access available to each member of staff.
+              New roles are added via SQL (supabase/sql/seed.sql) so the RLS
+              policies stay predictable.
             </p>
             {roles === null ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="h-14 animate-pulse rounded-xl bg-muted" />
+                ))}
+              </div>
             ) : (
-              <ul className="space-y-2">
+              <ul className="grid gap-2 sm:grid-cols-3">
                 {roles.map((r) => (
-                  <li key={r.id} className="rounded-md border px-3 py-2">
-                    <span className="text-sm font-medium">{r.name}</span>
-                    <p className="text-xs text-muted-foreground">{r.description}</p>
+                  <li key={r.id} className="rounded-xl border bg-muted/[0.18] px-3.5 py-2.5">
+                    <span className="text-sm font-medium capitalize">{r.name}</span>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{r.description}</p>
                   </li>
                 ))}
               </ul>
@@ -260,13 +273,13 @@ export function FirmSettingsForm() {
       )}
 
       {tab === "profile" && (
-        <Card>
+        <Card className={CARD_SHADOW}>
           <CardHeader>
             <CardTitle>Your profile</CardTitle>
           </CardHeader>
           <CardContent>
             {profile === null ? (
-              <p className="text-sm text-muted-foreground">Loading…</p>
+              <FormSkeleton rows={2} />
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
